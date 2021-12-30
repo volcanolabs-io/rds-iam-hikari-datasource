@@ -139,6 +139,8 @@
 	</developers>
 
 	<scm>
-		<connection>https://github.com/volcanolabs-io/rds-iam-hikari-datasource.git</connection>
+		<connection>scm:git:https://github.com/volcanolabs-io/rds-iam-hikari-datasource.git</connection>
+		<developerConnection>scm:git:https://github.com/volcanolabs-io/rds-iam-hikari-datasource.git</developerConnection>
+		<url>https://github.com/volcanolabs-io/rds-iam-hikari-datasource</url>
 	</scm>
 </project>
