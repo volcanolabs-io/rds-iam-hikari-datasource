@@ -6,7 +6,7 @@
 
 	<groupId>io.volcanolabs</groupId>
 	<artifactId>rds-iam-hikari-datasource</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>rds-iam-hikari-datasource</name>
 	<description>
 		An extension to the Hikari datasource for IAM Role based access to RDS databases. This is entirely based on the
@@ -143,4 +143,15 @@
 		<developerConnection>scm:git:https://github.com/volcanolabs-io/rds-iam-hikari-datasource.git</developerConnection>
 		<url>https://github.com/volcanolabs-io/rds-iam-hikari-datasource</url>
 	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+		</repository>
+	</distributionManagement>
 </project>
