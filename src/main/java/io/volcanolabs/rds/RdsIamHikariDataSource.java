@@ -17,45 +17,22 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 
 	private String getToken() {
 		var region = new DefaultAwsRegionProviderChain().getRegion();
-		var hostnamePort = getHostnamePort();
 
 		RdsIamAuthTokenGenerator generator = RdsIamAuthTokenGenerator.builder()
 				.credentials( new DefaultAWSCredentialsProviderChain() )
 				.region( region )
 				.build();
 
+		// JDBC URL has a standard URL format, like: jdbc:postgresql://localhost:5432/test_database
+		var cleanUrl = getJdbcUrl().substring( 5 );
+		var dbUri = URI.create( cleanUrl );
+
 		GetIamAuthTokenRequest request = GetIamAuthTokenRequest.builder()
-				.hostname( hostnamePort.key() )
-				.port( hostnamePort.value() )
+				.hostname( dbUri.getHost() )
+				.port( dbUri.getPort() )
 				.userName( getUsername() )
 				.build();
 
 		return generator.getAuthToken( request );
-	}
-
-	// JDBC URL has a standard URL format, like: jdbc:postgresql://localhost:5432/test_database
-	private Pair<String, Integer> getHostnamePort() {
-		var cleanUrl = getJdbcUrl().substring( 5 );
-		var dbUri = URI.create( cleanUrl );
-
-		return new Pair<>( dbUri.getHost(), dbUri.getPort() );
-	}
-
-	private static class Pair<K, V> {
-		K k;
-		V v;
-
-		Pair(K k, V v) {
-			this.k = k;
-			this.v = v;
-		}
-
-		K key() {
-			return k;
-		}
-
-		V value() {
-			return v;
-		}
 	}
 }
