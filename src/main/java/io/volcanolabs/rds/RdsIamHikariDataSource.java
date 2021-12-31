@@ -6,6 +6,8 @@ import com.amazonaws.services.rds.auth.GetIamAuthTokenRequest;
 import com.amazonaws.services.rds.auth.RdsIamAuthTokenGenerator;
 import com.zaxxer.hikari.HikariDataSource;
 
+import java.net.URI;
+
 public class RdsIamHikariDataSource extends HikariDataSource {
 
 	@Override
@@ -33,10 +35,10 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 
 	// JDBC URL has a standard URL format, like: jdbc:postgresql://localhost:5432/test_database
 	private Pair<String, Integer> getHostnamePort() {
-		var slashing = getJdbcUrl().indexOf( "//" ) + 2;
-		var sub = getJdbcUrl().substring( slashing, getJdbcUrl().indexOf( "/", slashing ) );
-		var split = sub.split( ":" );
-		return new Pair<>( split[ 0 ], Integer.parseInt( split[ 1 ] ) );
+		var cleanUrl = getJdbcUrl().substring( 5 );
+		var dbUri = URI.create( cleanUrl );
+
+		return new Pair<>( dbUri.getHost(), dbUri.getPort() );
 	}
 
 	private static class Pair<K, V> {
