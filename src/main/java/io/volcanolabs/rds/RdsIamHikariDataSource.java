@@ -36,10 +36,10 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 		var slashing = getJdbcUrl().indexOf( "//" ) + 2;
 		var sub = getJdbcUrl().substring( slashing, getJdbcUrl().indexOf( "/", slashing ) );
 		var split = sub.split( ":" );
-		return new Pair( split[ 0 ], Integer.parseInt( split[ 1 ] ) );
+		return new Pair<>( split[ 0 ], Integer.parseInt( split[ 1 ] ) );
 	}
 
-	private class Pair<K, V> {
+	private static class Pair<K, V> {
 		K k;
 		V v;
 
