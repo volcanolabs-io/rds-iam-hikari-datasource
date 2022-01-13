@@ -8,6 +8,10 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import java.net.URI;
 
+/**
+ * This Hikari datasource uses the AWS SDK to generate an auth token. That token is used as the password for an RDS
+ * instance configured for IAM Roles based access.
+ */
 public class RdsIamHikariDataSource extends HikariDataSource {
 
 	@Override

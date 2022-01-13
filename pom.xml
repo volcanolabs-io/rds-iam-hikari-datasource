@@ -6,7 +6,7 @@
 
 	<groupId>io.volcanolabs</groupId>
 	<artifactId>rds-iam-hikari-datasource</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>rds-iam-hikari-datasource</name>
 	<description>
 		An extension to the Hikari datasource for IAM Role based access to RDS databases. This is entirely based on the
@@ -18,12 +18,13 @@
 	<properties>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<licenses>
 		<license>
 			<name>MIT License</name>
-			<url>http://www.opensource.org/licenses/mit-license.php</url>
+			<url>https://www.opensource.org/licenses/mit-license.php</url>
 		</license>
 	</licenses>
 
