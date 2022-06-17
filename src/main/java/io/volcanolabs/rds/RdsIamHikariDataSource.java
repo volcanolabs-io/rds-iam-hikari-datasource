@@ -15,7 +15,7 @@ import java.net.URI;
  * instance configured for IAM Roles based access.
  */
 public class RdsIamHikariDataSource extends HikariDataSource {
-	private static final Logger log = LoggerFactory.getLogger(RdsIamHikariDataSource.class);
+	private static final Logger log = LoggerFactory.getLogger( RdsIamHikariDataSource.class );
 
 	public RdsIamHikariDataSource() {
 		log.trace( "RdsIamHikariDataSource created" );
@@ -24,7 +24,6 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 	@Override
 	public String getPassword() {
 		log.trace( "RdsIamHikariDataSource.getPassword() called." );
-
 		return getToken();
 	}
 
