@@ -1,1 +1,184 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0"			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"			xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">	<modelVersion>4.0.0</modelVersion>	<groupId>io.volcanolabs</groupId>	<artifactId>rds-iam-hikari-datasource</artifactId>	<version>1.0.4</version>	<name>rds-iam-hikari-datasource</name>	<description>		An extension to the Hikari datasource for IAM Role based access to RDS databases. This is entirely based on the		work of Tom de Vroomen in this article: https://blog.jdriven.com/2021/06/configure-hikari-connection-pool-when-using-rds-iam/		The intention of this library is just to make his excellent work available as a maven dependency.	</description>	<url>https://github.com/volcanolabs-io/rds-iam-hikari-datasource</url>	<properties>		<maven.compiler.source>11</maven.compiler.source>		<maven.compiler.target>11</maven.compiler.target>		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	</properties>	<licenses>		<license>			<name>MIT License</name>			<url>https://github.com/volcanolabs-io/rds-iam-hikari-datasource/blob/master/LICENSE</url>		</license>	</licenses>	<developers>		<developer>			<name>John McPeek</name>			<email>john@volcanolabs.io</email>			<organization>Volcano Labs, Inc.</organization>			<organizationUrl>https://github.com/volcanolabs-io</organizationUrl>		</developer>	</developers>	<scm>		<connection>scm:git:https://github.com/volcanolabs-io/rds-iam-hikari-datasource.git</connection>		<developerConnection>scm:git:https://github.com/volcanolabs-io/rds-iam-hikari-datasource.git</developerConnection>		<url>https://github.com/volcanolabs-io/rds-iam-hikari-datasource</url>	</scm>	<dependencyManagement>		<dependencies>			<dependency>				<groupId>org.springframework.boot</groupId>				<artifactId>spring-boot-dependencies</artifactId>				<version>2.7.0</version>				<type>pom</type>				<scope>import</scope>			</dependency>			<dependency>				<groupId>com.amazonaws</groupId>				<artifactId>aws-java-sdk-bom</artifactId>				<version>1.12.241</version>				<type>pom</type>				<scope>import</scope>			</dependency>		</dependencies>	</dependencyManagement>	<dependencies>		<dependency>			<groupId>com.zaxxer</groupId>			<artifactId>HikariCP</artifactId>		</dependency>		<dependency>			<groupId>com.amazonaws</groupId>			<artifactId>aws-java-sdk-sts</artifactId>		</dependency>		<dependency>			<groupId>com.amazonaws</groupId>			<artifactId>aws-java-sdk-rds</artifactId>		</dependency>		<dependency>			<groupId>org.slf4j</groupId>			<artifactId>slf4j-api</artifactId>		</dependency>	</dependencies>	<build>		<plugins>			<plugin>				<groupId>org.apache.maven.plugins</groupId>				<artifactId>maven-source-plugin</artifactId>				<version>3.2.1</version>				<executions>					<execution>						<id>attach-sources</id>						<goals>							<goal>jar-no-fork</goal>						</goals>					</execution>				</executions>			</plugin>			<plugin>				<groupId>org.apache.maven.plugins</groupId>				<artifactId>maven-javadoc-plugin</artifactId>				<version>3.3.1</version>				<executions>					<execution>						<id>attach-javadocs</id>						<goals>							<goal>jar</goal>						</goals>					</execution>				</executions>			</plugin>			<plugin>				<groupId>org.apache.maven.plugins</groupId>				<artifactId>maven-surefire-plugin</artifactId>				<version>2.22.2</version>			</plugin>			<plugin>				<groupId>org.sonatype.plugins</groupId>				<artifactId>nexus-staging-maven-plugin</artifactId>				<version>1.6.8</version>				<extensions>true</extensions>				<configuration>					<serverId>ossrh</serverId>					<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>				</configuration>				<dependencies>					<!--					  TODO:						 Remove after OSSRH-66257, NEXUS-26993 are fixed,						 possibly via https://github.com/sonatype/nexus-maven-plugins/pull/91					-->					<dependency>						<groupId>com.thoughtworks.xstream</groupId>						<artifactId>xstream</artifactId>						<version>1.4.15</version>					</dependency>				</dependencies>			</plugin>		</plugins>	</build>	<profiles>		<profile>			<id>ci-cd</id>			<build>				<plugins>					<plugin>						<groupId>org.apache.maven.plugins</groupId>						<artifactId>maven-gpg-plugin</artifactId>						<version>3.0.1</version>						<executions>							<execution>								<id>sign-artifacts</id>								<phase>verify</phase>								<goals>									<goal>sign</goal>								</goals>								<configuration>									<!-- Prevent gpg from using pinentry programs. Fixes: gpg: signing									failed: Inappropriate ioctl for device -->									<gpgArguments>										<arg>--pinentry-mode</arg>										<arg>loopback</arg>									</gpgArguments>								</configuration>							</execution>						</executions>					</plugin>				</plugins>			</build>		</profile>	</profiles>	<distributionManagement>		<snapshotRepository>			<id>ossrh</id>			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>		</snapshotRepository>		<repository>			<id>ossrh</id>			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>		</repository>	</distributionManagement></project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>io.volcanolabs</groupId>
+	<artifactId>rds-iam-hikari-datasource</artifactId>
+	<version>1.0.4</version>
+	<name>rds-iam-hikari-datasource</name>
+	<description>
+		An extension to the Hikari datasource for IAM Role based access to RDS databases. This is entirely based on the
+		work of Tom de Vroomen in this article: https://blog.jdriven.com/2021/06/configure-hikari-connection-pool-when-using-rds-iam/
+		The intention of this library is just to make his excellent work available as a maven dependency.
+	</description>
+	<url>https://github.com/volcanolabs-io/rds-iam-hikari-datasource</url>
+
+	<properties>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://github.com/volcanolabs-io/rds-iam-hikari-datasource/blob/master/LICENSE</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>John McPeek</name>
+			<email>john@volcanolabs.io</email>
+			<organization>Volcano Labs, Inc.</organization>
+			<organizationUrl>https://github.com/volcanolabs-io</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:https://github.com/volcanolabs-io/rds-iam-hikari-datasource.git</connection>
+		<developerConnection>scm:git:https://github.com/volcanolabs-io/rds-iam-hikari-datasource.git</developerConnection>
+		<url>https://github.com/volcanolabs-io/rds-iam-hikari-datasource</url>
+	</scm>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>2.7.0</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-bom</artifactId>
+				<version>1.12.241</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-sts</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-rds</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.3.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.8</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+				</configuration>
+				<dependencies>
+					<!--
+					  TODO:
+						 Remove after OSSRH-66257, NEXUS-26993 are fixed,
+						 possibly via https://github.com/sonatype/nexus-maven-plugins/pull/91
+					-->
+					<dependency>
+						<groupId>com.thoughtworks.xstream</groupId>
+						<artifactId>xstream</artifactId>
+						<version>1.4.15</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>ci-cd</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<configuration>
+									<!-- Prevent gpg from using pinentry programs. Fixes: gpg: signing
+									failed: Inappropriate ioctl for device -->
+									<gpgArguments>
+										<arg>--pinentry-mode</arg>
+										<arg>loopback</arg>
+									</gpgArguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+</project>
