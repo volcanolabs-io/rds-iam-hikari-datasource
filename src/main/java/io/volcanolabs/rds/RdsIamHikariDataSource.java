@@ -43,8 +43,9 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 		var dbUri = URI.create( cleanUrl );
 
 		GenerateAuthenticationTokenRequest authTokenRequest = GenerateAuthenticationTokenRequest.builder()
-				.username( getUsername() )
 				.hostname( dbUri.getHost() )
+				.port( dbUri.getPort() )
+				.username( getUsername() )
 				.build();
 
 		RdsUtilities utilities = RdsUtilities.builder()
