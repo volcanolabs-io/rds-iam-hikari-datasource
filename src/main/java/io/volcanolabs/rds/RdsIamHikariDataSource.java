@@ -1,12 +1,18 @@
 package io.volcanolabs.rds;
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.regions.DefaultAwsRegionProviderChain;
-import com.amazonaws.services.rds.auth.GetIamAuthTokenRequest;
-import com.amazonaws.services.rds.auth.RdsIamAuthTokenGenerator;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
+import software.amazon.awssdk.services.rds.RdsUtilities;
+import software.amazon.awssdk.services.rds.model.GenerateAuthenticationTokenRequest;
+import software.amazon.awssdk.services.ssm.SsmClient;
+import software.amazon.awssdk.services.ssm.SsmClientBuilder;
+import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
+import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 
 import java.net.URI;
 
@@ -16,6 +22,7 @@ import java.net.URI;
  */
 public class RdsIamHikariDataSource extends HikariDataSource {
 	private static final Logger log = LoggerFactory.getLogger( RdsIamHikariDataSource.class );
+	public static final String PARAMETER_STORE_REGION_KEY = "PARAMETER_STORE_REGION_KEY";
 
 	public RdsIamHikariDataSource() {
 		log.trace( "RdsIamHikariDataSource created" );
@@ -28,25 +35,50 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 	}
 
 	private String getToken() {
-		var region = new DefaultAwsRegionProviderChain().getRegion();
-		log.trace( "AWS region: {}", region );
-
-		RdsIamAuthTokenGenerator generator = RdsIamAuthTokenGenerator.builder()
-				.credentials( new DefaultAWSCredentialsProviderChain() )
-				.region( region )
-				.build();
+		var region = getRegion();
 
 		// JDBC URL has a standard URL format, like: jdbc:postgresql://localhost:5432/test_database
 		var cleanUrl = getJdbcUrl().substring( 5 );
 		log.trace( "cleanUrl: {}", cleanUrl );
 		var dbUri = URI.create( cleanUrl );
 
-		GetIamAuthTokenRequest request = GetIamAuthTokenRequest.builder()
+		GenerateAuthenticationTokenRequest authTokenRequest = GenerateAuthenticationTokenRequest.builder()
+				.username( getUsername() )
 				.hostname( dbUri.getHost() )
-				.port( dbUri.getPort() )
-				.userName( getUsername() )
 				.build();
 
-		return generator.getAuthToken( request );
+		RdsUtilities utilities = RdsUtilities.builder()
+				.credentialsProvider( DefaultCredentialsProvider.create() )
+				.region( region )
+				.build();
+
+		return utilities.generateAuthenticationToken( authTokenRequest );
+	}
+
+	private Region getRegion() {
+		var region = new DefaultAwsRegionProviderChain().getRegion();
+		log.trace( "AWS region: {}", region );
+
+		String regionOverrideKey = System.getenv().get( PARAMETER_STORE_REGION_KEY );
+		if ( regionOverrideKey != null ) {
+			SsmClientBuilder ssmClientBuilder = SsmClient.builder()
+					.region( region )
+					.credentialsProvider( ProfileCredentialsProvider.create() );
+
+			try ( SsmClient ssmClient = ssmClientBuilder.build() ) {
+				GetParameterRequest parameterRequest = GetParameterRequest.builder()
+						.name( regionOverrideKey )
+						.build();
+				GetParameterResponse parameterResponse = ssmClient.getParameter( parameterRequest );
+				var paramValue = parameterResponse.parameter().value();
+				var overrideRegion = Region.of( paramValue );
+				log.trace( "AWS region: {}", overrideRegion );
+
+				return overrideRegion;
+			}
+		}
+		else {
+			return region;
+		}
 	}
 }
