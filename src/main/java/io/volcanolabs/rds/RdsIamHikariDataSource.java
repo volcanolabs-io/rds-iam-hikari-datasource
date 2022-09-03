@@ -59,7 +59,7 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 		if ( rdsRegionOverride != null ) {
 			log.info( "RDS region override: {}", rdsRegionOverride );
 
-			return Region.of( rdsRegionOverride  );
+			return Region.of( rdsRegionOverride );
 		}
 		else {
 			return region;
