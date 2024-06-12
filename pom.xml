@@ -16,8 +16,8 @@
 	<url>https://github.com/volcanolabs-io/rds-iam-hikari-datasource</url>
 
 	<properties>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -48,7 +48,7 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
-				<version>3.3.3</version>
+				<version>3.3.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -116,70 +116,37 @@
 				<version>3.2.1</version>
 			</plugin>
 			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.8</version>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
+				<version>0.4.0</version>
 				<extensions>true</extensions>
 				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+					<publishingServerId>central</publishingServerId>
+					<tokenAuth>true</tokenAuth>
 				</configuration>
-				<dependencies>
-					<!--
-					  TODO:
-						 Remove after OSSRH-66257, NEXUS-26993 are fixed,
-						 possibly via https://github.com/sonatype/nexus-maven-plugins/pull/91
-					-->
-					<dependency>
-						<groupId>com.thoughtworks.xstream</groupId>
-						<artifactId>xstream</artifactId>
-						<version>1.4.15</version>
-					</dependency>
-				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+						<configuration>
+							<keyname>${gpg.keyname}</keyname>
+							<passphraseServerId>${gpg.passphrase}</passphraseServerId>
+							<gpgArguments>
+								<arg>--pinentry-mode</arg>
+								<arg>loopback</arg>
+							</gpgArguments>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
-
-	<profiles>
-		<profile>
-			<id>ci-cd</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>3.0.1</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-								<configuration>
-									<!-- Prevent gpg from using pinentry programs. Fixes: gpg: signing
-									failed: Inappropriate ioctl for device -->
-									<gpgArguments>
-										<arg>--pinentry-mode</arg>
-										<arg>loopback</arg>
-									</gpgArguments>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
 </project>
