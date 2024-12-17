@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.jdbc.RdsDataSourceConfig
