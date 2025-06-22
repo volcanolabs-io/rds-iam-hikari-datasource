@@ -1,9 +1,10 @@
 package io.volcanolabs.rds;
 
+import com.zaxxer.hikari.util.Credentials;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.rds.RdsUtilities;
@@ -21,6 +22,12 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 
 	public RdsIamHikariDataSource() {
 		log.trace( "RdsIamHikariDataSource created" );
+	}
+
+	@Override
+	public Credentials getCredentials() {
+		log.trace( "RdsIamHikariDataSource.getCredentials() called." );
+		return Credentials.of(getUsername(), getToken());
 	}
 
 	@Override
@@ -44,7 +51,7 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 				.build();
 
 		RdsUtilities utilities = RdsUtilities.builder()
-				.credentialsProvider( DefaultCredentialsProvider.create() )
+				.credentialsProvider( WebIdentityTokenFileCredentialsProvider.create() )
 				.region( region )
 				.build();
 
