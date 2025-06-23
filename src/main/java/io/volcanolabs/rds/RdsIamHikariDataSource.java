@@ -1,5 +1,6 @@
 package io.volcanolabs.rds;
 
+import com.zaxxer.hikari.util.Credentials;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,12 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 	}
 
 	@Override
+	public Credentials getCredentials() {
+		log.trace( "RdsIamHikariDataSource.getCredentials() called." );
+		return Credentials.of(getUsername(), getToken());
+	}
+
+	@Override
 	public String getPassword() {
 		log.trace( "RdsIamHikariDataSource.getPassword() called." );
 		return getToken();
@@ -44,7 +51,7 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 				.build();
 
 		RdsUtilities utilities = RdsUtilities.builder()
-				.credentialsProvider( DefaultCredentialsProvider.create() )
+				.credentialsProvider( DefaultCredentialsProvider.builder().build() )
 				.region( region )
 				.build();
 
