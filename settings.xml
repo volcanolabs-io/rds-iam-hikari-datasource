@@ -1,0 +1,21 @@
+<settings>
+    <servers>
+        <server>
+            <id>central</id>
+            <username><!-- maven central token username --></username>
+            <password><!-- maven central token password --></password>
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <id>central</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <gpg.keyname><!-- gpg key name --></gpg.keyname>
+                <gpg.passphrase><!-- gpg key pass phrase --></gpg.passphrase>
+            </properties>
+        </profile>
+    </profiles>
+</settings>
