@@ -16,8 +16,7 @@
 	<url>https://github.com/volcanolabs-io/rds-iam-hikari-datasource</url>
 
 	<properties>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -142,7 +141,7 @@
 							<goal>sign</goal>
 						</goals>
 						<configuration>
-							<keyname>${gpg.keyname}</keyname>
+<!--							<keyname>${gpg.keyname}</keyname>-->
 							<passphraseServerId>${gpg.passphrase}</passphraseServerId>
 							<gpgArguments>
 								<arg>--pinentry-mode</arg>
