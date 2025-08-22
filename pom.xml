@@ -6,7 +6,7 @@
 
 	<groupId>io.volcanolabs</groupId>
 	<artifactId>rds-iam-hikari-datasource</artifactId>
-	<version>3.2.2</version>
+	<version>3.2.3</version>
 	<name>rds-iam-hikari-datasource</name>
 	<description>
 		An extension to the Hikari datasource for IAM Role based access to RDS databases. This is entirely based on the
