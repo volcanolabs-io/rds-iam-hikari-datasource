@@ -41,12 +41,12 @@ public class RdsDataSourceConfig {
 	@SuppressWarnings("unchecked")
 	private static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
 	                                      ClassLoader classLoader) {
-		return (T) DataSourceBuilder.create(classLoader)
-				.type(type)
-				.driverClassName(connectionDetails.getDriverClassName())
-				.url(connectionDetails.getJdbcUrl())
-				.username(connectionDetails.getUsername())
-				.password(connectionDetails.getPassword())
+		return (T) DataSourceBuilder.create( classLoader )
+				.type( type )
+				.driverClassName( connectionDetails.getDriverClassName() )
+				.url( connectionDetails.getJdbcUrl() )
+				.username( connectionDetails.getUsername() )
+				.password( connectionDetails.getPassword() )
 				.build();
 	}
 }

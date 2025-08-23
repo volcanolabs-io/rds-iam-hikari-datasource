@@ -27,7 +27,7 @@ public class RdsIamHikariDataSource extends HikariDataSource {
 	@Override
 	public Credentials getCredentials() {
 		log.trace( "RdsIamHikariDataSource.getCredentials() called." );
-		return Credentials.of(getUsername(), getToken());
+		return Credentials.of( getUsername(), getToken() );
 	}
 
 	@Override
