@@ -38,13 +38,13 @@ jobs:
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Verify
+      - name: Build and test
         if: github.event_name != 'release'
-        run: mvn -B -ntp verify
+        run: mvn -B -ntp package
 
       - name: Deploy to Maven Central
         if: github.event_name == 'release'
-        run: mvn -B -ntp deploy
+        run: mvn -B -ntp -Prelease deploy
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
