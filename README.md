@@ -10,6 +10,8 @@ Use IAM Role based access to RDS databases with Hikari datasource. (Spring Boot)
 
 
 ## CI/CD
+![Maven Central Version](https://img.shields.io/maven-central/v/io.volcanolabs/rds-iam-hikari-datasource)
+
 [![Maven Package](https://github.com/volcanolabs-io/rds-iam-hikari-datasource/actions/workflows/maven-publish.yml/badge.svg)](https://github.com/volcanolabs-io/rds-iam-hikari-datasource/actions/workflows/maven-publish.yml)
 
 [![CodeQL](https://github.com/volcanolabs-io/rds-iam-hikari-datasource/actions/workflows/codeql.yml/badge.svg)](https://github.com/volcanolabs-io/rds-iam-hikari-datasource/actions/workflows/codeql.yml)
