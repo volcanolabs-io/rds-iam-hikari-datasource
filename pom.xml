@@ -6,7 +6,7 @@
 
 	<groupId>io.volcanolabs</groupId>
 	<artifactId>rds-iam-hikari-datasource</artifactId>
-	<version>4.0.4</version>
+	<version>5.0.0</version>
 	<name>rds-iam-hikari-datasource</name>
 	<description>
 		An extension to the Hikari datasource for IAM Role based access to RDS databases. This is entirely based on the
@@ -47,7 +47,7 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
-				<version>4.1.1</version>
+				<version>4.1.2</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -87,6 +87,17 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
