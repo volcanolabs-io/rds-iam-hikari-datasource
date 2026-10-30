@@ -1,25 +1,34 @@
 package org.springframework.boot.jdbc.autoconfigure;
 
 import com.zaxxer.hikari.HikariDataSource;
+import io.volcanolabs.rds.RdsIamHikariDataSource;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 
-@AutoConfiguration
+@AutoConfiguration( before = DataSourceAutoConfiguration.class )
 @ConditionalOnMissingBean( DataSource.class )
 @ConditionalOnProperty(
 		name = "spring.datasource.type",
-		havingValue = "io.volcanolabs.rds.RdsIamHikariDataSource",
-		matchIfMissing = true
+		havingValue = "io.volcanolabs.rds.RdsIamHikariDataSource"
 )
+@EnableConfigurationProperties( DataSourceProperties.class )
 public class RdsDataSourceConfig {
+
+	// Boot only registers this inside PooledDataSourceConfiguration, which backs off once our DataSource exists.
+	@Bean
+	@ConditionalOnMissingBean( JdbcConnectionDetails.class )
+	PropertiesJdbcConnectionDetails jdbcConnectionDetails(DataSourceProperties properties) {
+		return new PropertiesJdbcConnectionDetails( properties );
+	}
 
 	@Bean
 	static HikariJdbcConnectionDetailsBeanPostProcessor jdbcConnectionDetailsHikariBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
@@ -29,7 +38,7 @@ public class RdsDataSourceConfig {
 	@Bean
 	@ConfigurationProperties( prefix = "spring.datasource.hikari" )
 	HikariDataSource dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails) {
-		HikariDataSource dataSource = (HikariDataSource) createDataSource( connectionDetails, HikariDataSource.class, properties.getClassLoader() );
+		HikariDataSource dataSource = createDataSource( connectionDetails, RdsIamHikariDataSource.class, properties.getClassLoader() );
 		if ( StringUtils.hasText( properties.getName() ) ) {
 			dataSource.setPoolName( properties.getName() );
 		}
